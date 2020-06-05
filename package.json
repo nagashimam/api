@@ -1,0 +1,17 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "api for coupon",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nagashimam",
+  "license": "ISC",
+  "dependencies": {
+    "node": "14.4.0"
+  },
+  "devDependencies": {
+    "jest": "26.0.1"
+  }
+}
