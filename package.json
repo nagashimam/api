@@ -1,0 +1,25 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "api for coupon",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --notify --coverage"
+  },
+  "author": "nagashimam",
+  "license": "ISC",
+  "dependencies": {
+    "node": "14.4.0",
+    "@google-cloud/spanner": "^5.1.0"
+  },
+  "devDependencies": {
+    "typescript": "3.9.5",
+    "@babel/core": "7.10.2",
+    "@babel/preset-env": "7.10.2",
+    "@babel/preset-typescript": "7.10.1",
+    "@types/jest": "^25.2.3",
+    "babel-jest": "26.0.1",
+    "jest": "26.0.1",
+    "ts-jest": "^26.1.0"
+  }
+}
