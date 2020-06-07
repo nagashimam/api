@@ -4,7 +4,7 @@
   "description": "api for coupon",
   "main": "index.js",
   "scripts": {
-    "test": "jest --notify --coverage"
+    "test": "jest --notify --coverage --env node"
   },
   "author": "nagashimam",
   "license": "ISC",
