@@ -1,12 +1,14 @@
 import { Transaction, Database } from "@google-cloud/spanner";
-async function updateDb(
+import { CouponSqlObj } from "../../../type-alias";
+
+export async function updateDb(
+  database: Database,
+  sqlObject: CouponSqlObj,
   logger: Console,
-  err: any,
-  transaction: Transaction,
-  sqlObject: { sql: string },
-  database: Database
+  err: Error,
+  transaction: Transaction
 ) {
-  if (err) return logger.error(err);
+  if (err) return logger.error(err.message);
 
   try {
     await transaction.runUpdate(sqlObject);
@@ -17,5 +19,3 @@ async function updateDb(
     database.close();
   }
 }
-
-module.exports = updateDb;

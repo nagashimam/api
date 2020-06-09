@@ -1,38 +1,57 @@
-const writeTransaction = require("../../../src/controller/db/transaction-controller");
-const sqlExecution = require("../../../src/controller/db/update-db-controller");
-const sqlObject = {
-  sql: `
-        UPDATE
-          Coupen Title
-        SET
-          Title = 'Dummy'
-        WHERE
-          1 = 2`,
-};
+import { Database, Transaction } from "@google-cloud/spanner";
+import { generateAddCouponSqlObject } from "../../../src/sql/add-coupon-sql";
+import {
+  startTransaction,
+  prepareTransation,
+} from "../../../src/controller/db/transaction-controller";
+import { updateDb } from "../../../src/controller/db/update-db-controller";
 
 describe("書き込みトランザクションのテスト", () => {
-  const database = {
-    close() {},
-    runTransaction(func) {
-      func();
-    },
-  };
+  let database: Database;
+
+  beforeEach(() => {
+    database = jest.genMockFromModule("@google-cloud/spanner");
+    database.runTransaction = jest.fn(() => {
+      return null;
+    });
+  });
+
+  const sqlObject = generateAddCouponSqlObject(
+    "masato",
+    new Date(),
+    "肩たたき30分"
+  );
 
   test("トランザクションを開始すること", async () => {
     const databaseSpy = jest.spyOn(database, "runTransaction");
-    writeTransaction(database, sqlExecution, sqlObject);
+    const handler = async (err, transaction) => {
+      updateDb(database, sqlObject, console, err, transaction);
+    };
+    startTransaction(database, handler);
     expect(databaseSpy).toHaveBeenCalledTimes(1);
+    expect(databaseSpy).toBeCalledWith(handler);
   });
 
-  test("SQLを実行すること", async () => {
-    const sqlExecutionSpy = jest.fn(sqlExecution);
-    writeTransaction(database, sqlExecutionSpy, sqlObject);
-    expect(sqlExecutionSpy).toHaveBeenCalledTimes(1);
-  });
-
-  test("トランザクション後にデータベースを切断すること", async () => {
-    const databaseSpy = jest.spyOn(database, "close");
-    writeTransaction(database, sqlExecution, sqlObject);
-    expect(databaseSpy).toHaveBeenCalledTimes(1);
+  test("トランザクション処理を正しい引数で呼び出すこと", () => {
+    const updateDbMock = jest.fn(updateDb);
+    const handler = prepareTransation(
+      updateDbMock,
+      database,
+      sqlObject,
+      console
+    );
+    const err = new Error("エラー");
+    const transaction: Transaction = jest.genMockFromModule(
+      "@google-cloud/spanner"
+    );
+    handler(err, transaction);
+    expect(updateDbMock).toHaveBeenCalledTimes(1);
+    expect(updateDbMock).toHaveBeenCalledWith(
+      database,
+      sqlObject,
+      console,
+      err,
+      transaction
+    );
   });
 });
