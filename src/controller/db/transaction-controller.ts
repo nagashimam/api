@@ -1,24 +1,24 @@
 import { Database } from "@google-cloud/spanner";
-import {
-  CouponSqlObj,
-  SqlExecutor,
-  TransactionHandler,
-} from "../../../type-alias";
+import { SqlObj, SqlExecutor, TransactionHandler } from "../../../type-alias";
 
-export function startTransaction(
-  database: Database,
-  handler: TransactionHandler
-): void {
-  database.runTransaction(handler);
+export class TransactionStarter {
+  public startTransaction(
+    database: Database,
+    handler: TransactionHandler
+  ): void {
+    database.runTransaction(handler);
+  }
 }
 
-export function prepareTransation(
-  sqlExecutor: SqlExecutor,
-  database: Database,
-  couponSqlObj: CouponSqlObj,
-  console: Console
-): TransactionHandler {
-  return async (err, transaction) => {
-    sqlExecutor(database, couponSqlObj, console, err, transaction);
-  };
+export class TransactionHandlerGenerator<Params> {
+  public genTransactionHandler(
+    sqlExecutor: SqlExecutor<Params>,
+    database: Database,
+    couponSqlObj: SqlObj<Params>,
+    console: Console
+  ): TransactionHandler {
+    return async (err, transaction) => {
+      sqlExecutor(database, couponSqlObj, console, err, transaction);
+    };
+  }
 }

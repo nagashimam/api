@@ -1,21 +1,15 @@
 import { Transaction, Database } from "@google-cloud/spanner";
 
-export type AddCouponSqlObj = {
+export type SqlObj<Params> = {
   sql: string;
-  params: { uid: string; createdBy: string; title: string };
+  params: Params;
 };
 
-// まだ更新系は作っていないので適当
-export type UpdateCouponSqlObj = {
-  sql: string;
-  params: { uid: string; createdBy: string; title: string };
-};
+export type AddCouponParams = { uid: string; createdBy: string; title: string };
 
-export type CouponSqlObj = AddCouponSqlObj | UpdateCouponSqlObj;
-
-export type SqlExecutor = (
+export type SqlExecutor<Params> = (
   database: Database,
-  sqlObject: CouponSqlObj,
+  sqlObject: SqlObj<Params>,
   console: Console,
   err: Error,
   transaction: Transaction

@@ -13,14 +13,18 @@
     "@google-cloud/spanner": "^5.1.0",
     "@google-cloud/common": "^3.0.0"
   },
+  "jest": {
+    "preset": "ts-jest"
+  },
   "devDependencies": {
-    "typescript": "3.9.5",
     "@babel/core": "7.10.2",
     "@babel/preset-env": "7.10.2",
     "@babel/preset-typescript": "7.10.1",
     "@types/jest": "^25.2.3",
     "babel-jest": "26.0.1",
     "jest": "26.0.1",
-    "ts-jest": "^26.1.0"
+    "node-mocks-http": "^1.8.1",
+    "ts-jest": "^26.1.0",
+    "typescript": "3.9.5"
   }
 }

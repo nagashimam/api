@@ -1,7 +1,6 @@
 import { updateDb } from "../../../src/controller/db/update-db-controller";
 import { Transaction, Database } from "@google-cloud/spanner";
-import { generateAddCouponSqlObject } from "../../../src/sql/add-coupon-sql";
-import { ExecuteSqlRequest } from "@google-cloud/spanner/build/src/transaction";
+import { SqlObj, AddCouponParams } from "../../../type-alias";
 
 describe("Spannerの更新処理を行うこと", () => {
   let transaction: Transaction;
@@ -9,7 +8,7 @@ describe("Spannerの更新処理を行うこと", () => {
 
   beforeEach(() => {
     transaction = jest.genMockFromModule("@google-cloud/spanner");
-    transaction.runUpdate = jest.fn((query: string | ExecuteSqlRequest) => {
+    transaction.runUpdate = jest.fn((query: string) => {
       return null;
     });
     transaction.commit = jest.fn(() => {
@@ -22,72 +21,50 @@ describe("Spannerの更新処理を行うこと", () => {
     });
   });
 
-  const sqlObject = generateAddCouponSqlObject(
-    "masato",
-    new Date(),
-    "肩たたき30分"
-  );
+  const sqlObj: SqlObj<AddCouponParams> = {
+    sql: "",
+    params: { uid: "", createdBy: "", title: "" },
+  };
 
   describe("実行前チェック", () => {
-    test("エラーがなければコンソールに何も表示しないこと", async () => {
-      const consoleSpy = jest.spyOn(console, "error");
-      await updateDb(database, sqlObject, console, null, transaction);
-      await expect(consoleSpy).toHaveBeenCalledTimes(0);
-      consoleSpy.mockClear();
-
-      await updateDb(database, sqlObject, console, undefined, transaction);
-      await expect(consoleSpy).toHaveBeenCalledTimes(0);
-      consoleSpy.mockClear();
-    });
-
-    test("エラーがあればコンソールに表示すること", async () => {
-      const consoleSpy = jest.spyOn(console, "error");
-      await updateDb(
-        database,
-        sqlObject,
-        console,
-        new Error("エラー"),
-        transaction
-      );
-      await expect(consoleSpy).toHaveBeenCalledTimes(1);
-      await expect(consoleSpy).toHaveBeenCalledWith("エラー");
-      consoleSpy.mockClear();
+    test("エラーがあればそのまま投げること", async () => {
+      const err = new Error("エラー");
+      const result = updateDb(database, sqlObj, err, transaction);
+      await expect(result).rejects.toThrow();
     });
   });
 
   describe("SQL実行", () => {
     test("エラーがなければSQLを実行すること", async () => {
       const transactionSpy = jest.spyOn(transaction, "runUpdate");
-      await updateDb(database, sqlObject, console, undefined, transaction);
+      await updateDb(database, sqlObj, undefined, transaction);
       await expect(transactionSpy).toHaveBeenCalledTimes(1);
-      await expect(transactionSpy).toBeCalledWith(sqlObject);
+      await expect(transactionSpy).toBeCalledWith(sqlObj);
       transactionSpy.mockClear();
     });
 
     test("SQL実行に成功したらコミットすること", async () => {
       const transactionSpy = jest.spyOn(transaction, "commit");
-      await updateDb(database, sqlObject, console, undefined, transaction);
+      await updateDb(database, sqlObj, undefined, transaction);
       await expect(transactionSpy).toHaveBeenCalledTimes(1);
       transactionSpy.mockClear();
     });
 
-    test("SQL実行に失敗したらコンソールにエラーを表示すること", async () => {
-      transaction.runUpdate = jest.fn((query: string | ExecuteSqlRequest) => {
-        throw new Error("エラー");
+    test("SQL実行に失敗したら例外を投げること", async () => {
+      const err = new Error("エラー");
+      transaction.runUpdate = jest.fn((query: string) => {
+        throw err;
       });
-      const consoleSpy = jest.spyOn(console, "error");
-      await updateDb(database, sqlObject, console, undefined, transaction);
-      await expect(consoleSpy).toHaveBeenCalledTimes(1);
-      await expect(consoleSpy).toHaveBeenCalledWith("エラー");
-      consoleSpy.mockClear();
+      const result = updateDb(database, sqlObj, undefined, transaction);
+      await expect(result).rejects.toThrow(err);
     });
 
     test("SQL実行に失敗したらコミットしないこと", async () => {
-      transaction.runUpdate = jest.fn((query: string | ExecuteSqlRequest) => {
+      transaction.runUpdate = jest.fn((query: string) => {
         throw new Error("エラー");
       });
       const transactionSpy = jest.spyOn(transaction, "commit");
-      await updateDb(database, sqlObject, console, undefined, transaction);
+      updateDb(database, sqlObj, undefined, transaction);
       await expect(transactionSpy).toHaveBeenCalledTimes(0);
       transactionSpy.mockClear();
     });
@@ -96,14 +73,14 @@ describe("Spannerの更新処理を行うこと", () => {
   describe("実行後処理", () => {
     test("SQL実行に成功したらデータベースを切断する", async () => {
       const databaseSpy = jest.spyOn(database, "close");
-      await updateDb(database, sqlObject, console, undefined, transaction);
+      await updateDb(database, sqlObj, undefined, transaction);
       await expect(databaseSpy).toHaveBeenCalledTimes(1);
       databaseSpy.mockClear();
     });
 
     test("SQL実行に失敗してもデータベースを切断する", async () => {
       const databaseSpy = jest.spyOn(database, "close");
-      await updateDb(database, sqlObject, console, undefined, transaction);
+      await updateDb(database, sqlObj, undefined, transaction);
       await expect(databaseSpy).toHaveBeenCalledTimes(1);
       databaseSpy.mockClear();
     });

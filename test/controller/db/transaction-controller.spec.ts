@@ -1,10 +1,6 @@
 import { Database, Transaction } from "@google-cloud/spanner";
-import { generateAddCouponSqlObject } from "../../../src/sql/add-coupon-sql";
-import {
-  startTransaction,
-  prepareTransation,
-} from "../../../src/controller/db/transaction-controller";
-import { updateDb } from "../../../src/controller/db/update-db-controller";
+import { TransactionStarter } from "../../../src/controller/db/transaction-controller";
+import { TransactionHandlerGenerator } from "../../../src/controller/db/transaction-controller";
 
 describe("書き込みトランザクションのテスト", () => {
   let database: Database;
@@ -16,25 +12,29 @@ describe("書き込みトランザクションのテスト", () => {
     });
   });
 
-  const sqlObject = generateAddCouponSqlObject(
-    "masato",
-    new Date(),
-    "肩たたき30分"
-  );
+  const sqlObject = {
+    sql: "masato",
+    params: {
+      uid: "aiueo",
+      createdBy: "kakikukeko",
+      title: "sashisuseso",
+    },
+  };
 
   test("トランザクションを開始すること", async () => {
     const databaseSpy = jest.spyOn(database, "runTransaction");
-    const handler = async (err, transaction) => {
-      updateDb(database, sqlObject, console, err, transaction);
-    };
-    startTransaction(database, handler);
+    const handler = async (err: Error, transaction: Transaction) => {};
+    const starter = new TransactionStarter();
+
+    starter.startTransaction(database, handler);
     expect(databaseSpy).toHaveBeenCalledTimes(1);
-    expect(databaseSpy).toBeCalledWith(handler);
+    expect(databaseSpy).toHaveBeenCalledWith(handler);
   });
 
   test("トランザクション処理を正しい引数で呼び出すこと", () => {
-    const updateDbMock = jest.fn(updateDb);
-    const handler = prepareTransation(
+    const updateDbMock = jest.fn();
+    const generator = new TransactionHandlerGenerator();
+    const handler = generator.genTransactionHandler(
       updateDbMock,
       database,
       sqlObject,

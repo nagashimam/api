@@ -1,5 +1,6 @@
-import { AddCouponSqlObj } from "../../type-alias";
-import { generateAddCouponSqlObject } from "../../src/sql/add-coupon-sql";
+import { SqlObj, AddCouponParams } from "../../type-alias";
+import {} from "../../src/sql/add-coupon-sql";
+import AddCouponSqlObjGenerator from "../../src/sql/add-coupon-sql";
 
 describe("クーポンを追加するSQLを生成すること", () => {
   const hash = require("crypto");
@@ -8,7 +9,8 @@ describe("クーポンを追加するSQLを生成すること", () => {
     const date = new Date();
     jest.spyOn(date, "getMilliseconds").mockImplementation(() => 10000);
 
-    const sqlObj: AddCouponSqlObj = generateAddCouponSqlObject(
+    const sqlObjGenerator = new AddCouponSqlObjGenerator();
+    const sqlObj: SqlObj<AddCouponParams> = sqlObjGenerator.generateAddCouponSqlObject(
       "masato",
       date,
       "30分肩たたき無料"

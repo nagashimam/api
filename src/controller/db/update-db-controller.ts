@@ -1,20 +1,19 @@
 import { Transaction, Database } from "@google-cloud/spanner";
-import { CouponSqlObj } from "../../../type-alias";
+import { SqlObj } from "../../../type-alias";
 
-export async function updateDb(
+export async function updateDb<Params>(
   database: Database,
-  sqlObject: CouponSqlObj,
-  logger: Console,
+  sqlObject: SqlObj<Params>,
   err: Error,
   transaction: Transaction
 ) {
-  if (err) return logger.error(err.message);
+  if (err) throw err;
 
   try {
     await transaction.runUpdate(sqlObject);
     await transaction.commit();
   } catch (ex) {
-    logger.error(ex.message);
+    throw ex;
   } finally {
     database.close();
   }
