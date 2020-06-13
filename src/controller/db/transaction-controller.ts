@@ -14,11 +14,10 @@ export class TransactionHandlerGenerator<Params> {
   public genTransactionHandler(
     sqlExecutor: SqlExecutor<Params>,
     database: Database,
-    couponSqlObj: SqlObj<Params>,
-    console: Console
+    couponSqlObj: SqlObj<Params>
   ): TransactionHandler {
     return async (err, transaction) => {
-      sqlExecutor(database, couponSqlObj, console, err, transaction);
+      sqlExecutor(database, couponSqlObj, err, transaction);
     };
   }
 }

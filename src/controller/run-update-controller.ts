@@ -7,7 +7,7 @@ import { updateDb } from "./db/update-db-controller";
 import { SqlObj } from "../../type-alias";
 
 export default class UpdateRunner {
-  public runUpdate<Params>(
+  public async runUpdate<Params>(
     dbGenerator: DatabaseGenerator,
     sqlObj: SqlObj<Params>,
     handlerGenerator: TransactionHandlerGenerator<Params>,
@@ -17,8 +17,7 @@ export default class UpdateRunner {
     const handler = handlerGenerator.genTransactionHandler(
       updateDb,
       database,
-      sqlObj,
-      console
+      sqlObj
     );
     starter.startTransaction(database, handler);
   }

@@ -48,8 +48,7 @@ describe("DB更新処理を実行すること", () => {
     expect(handlerGenerator.genTransactionHandler).toHaveBeenCalledWith(
       updateDb,
       database,
-      sqlObj,
-      console
+      sqlObj
     );
 
     expect(starter.startTransaction).toHaveBeenCalledTimes(1);

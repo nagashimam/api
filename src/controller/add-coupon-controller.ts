@@ -6,7 +6,10 @@ import {
   TransactionStarter,
 } from "./db/transaction-controller";
 import { AddCouponParams } from "../../type-alias";
-export function addCoupon(createdBy: string, title: string) {
+export async function addCoupon(
+  createdBy: string,
+  title: string
+): Promise<string> {
   const generator = new AddCouponSqlObjGenerator();
   const sqlObj = generator.generateAddCouponSqlObject(
     createdBy,
@@ -14,10 +17,11 @@ export function addCoupon(createdBy: string, title: string) {
     title
   );
   const updateRunner = new UpdateRunner();
-  updateRunner.runUpdate(
+  await updateRunner.runUpdate(
     new DatabaseGenerator(),
     sqlObj,
     new TransactionHandlerGenerator<AddCouponParams>(),
     new TransactionStarter()
   );
+  return sqlObj.params.uid;
 }

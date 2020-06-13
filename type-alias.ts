@@ -10,7 +10,6 @@ export type AddCouponParams = { uid: string; createdBy: string; title: string };
 export type SqlExecutor<Params> = (
   database: Database,
   sqlObject: SqlObj<Params>,
-  console: Console,
   err: Error,
   transaction: Transaction
 ) => void;

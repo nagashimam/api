@@ -37,8 +37,7 @@ describe("書き込みトランザクションのテスト", () => {
     const handler = generator.genTransactionHandler(
       updateDbMock,
       database,
-      sqlObject,
-      console
+      sqlObject
     );
     const err = new Error("エラー");
     const transaction: Transaction = jest.genMockFromModule(
@@ -49,7 +48,6 @@ describe("書き込みトランザクションのテスト", () => {
     expect(updateDbMock).toHaveBeenCalledWith(
       database,
       sqlObject,
-      console,
       err,
       transaction
     );

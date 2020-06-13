@@ -29,7 +29,7 @@ describe("Coupon追加処理", () => {
     UpdateRunnerMock.mockClear();
   });
 
-  test("SQL生成処理を正しい引数で呼び出すこと", () => {
+  test("SQL生成処理を正しく呼び出すこと", async () => {
     const generateAddCouponSqlObjectMock = jest.fn(
       (createdBy: string, date: Date, title: string) => addSqlObj
     );
@@ -44,9 +44,9 @@ describe("Coupon追加処理", () => {
         },
       };
     });
-    addCoupon("masato", "肩たたき30分無料");
-
+    const result = await addCoupon("masato", "肩たたき30分無料");
     expect(generateAddCouponSqlObjectMock).toHaveBeenCalledTimes(1);
+    expect(result).toBe("unique id");
 
     // 1回目の呼び出しのオブジェクト
     const call = generateAddCouponSqlObjectMock.mock.calls[0];
@@ -57,7 +57,7 @@ describe("Coupon追加処理", () => {
     expect(call[2]).toBe("肩たたき30分無料");
   });
 
-  test("データベース更新処理を正しいSQLオブジェクトで呼び出すこと", () => {
+  test("データベース更新処理を正しいSQLオブジェクトで呼び出すこと", async () => {
     const runUpdateMock = jest.fn();
     UpdateRunnerMock.mockImplementation(() => {
       return {
@@ -71,8 +71,25 @@ describe("Coupon追加処理", () => {
         },
       };
     });
-    addCoupon("masato", "肩たたき30分無料");
+    await addCoupon("masato", "肩たたき30分無料");
     expect(runUpdateMock).toHaveBeenCalledTimes(1);
     expect(runUpdateMock).toHaveBeenCalledWith(addSqlObj);
+  });
+
+  test("データベース更新処理に失敗した場合、例外を投げると", async () => {
+    UpdateRunnerMock.mockImplementation(() => {
+      return {
+        runUpdate(
+          dbGenerator: DatabaseGenerator,
+          sqlObj: SqlObj<AddCouponParams>,
+          handlerGenerator: TransactionHandlerGenerator<AddCouponParams>,
+          starter: TransactionStarter
+        ) {
+          throw new Error();
+        },
+      };
+    });
+    const result = addCoupon("masato", "肩たたき30分無料");
+    await expect(result).rejects.toThrow();
   });
 });
