@@ -1,7 +1,7 @@
 import * as Joi from "@hapi/joi";
 
 export default class AddCouponValidator {
-  public validateAddCouponRequest(createdBy: string, title: string): Error {
+  public validateAddCouponRequest(createdBy: string, title: string): string {
     const schema = Joi.object({
       createdBy: this.generateSchemaObjectFor("createdBy"),
       title: this.generateSchemaObjectFor("title"),
