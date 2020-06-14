@@ -5,7 +5,12 @@ export type SqlObj<Params> = {
   params: Params;
 };
 
-export type AddCouponParams = { uid: string; createdBy: string; title: string };
+export type AddCouponParams = {
+  uid: string;
+  createdBy: string;
+  createdAt: string;
+  title: string;
+};
 
 export type SqlExecutor<Params> = (
   database: Database,
@@ -15,3 +20,12 @@ export type SqlExecutor<Params> = (
 ) => void;
 
 export type TransactionHandler = (err: Error, transaction: Transaction) => void;
+
+export type CouponObj = {
+  uid: string;
+  createdAt: string;
+  createdBy: string;
+  givenTo: string;
+  title: string;
+  usedAt: string;
+};
