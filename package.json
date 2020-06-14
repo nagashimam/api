@@ -9,9 +9,10 @@
   "author": "nagashimam",
   "license": "ISC",
   "dependencies": {
-    "node": "14.4.0",
+    "@google-cloud/common": "^3.0.0",
     "@google-cloud/spanner": "^5.1.0",
-    "@google-cloud/common": "^3.0.0"
+    "@hapi/joi": "^17.1.1",
+    "node": "14.4.0"
   },
   "jest": {
     "preset": "ts-jest"

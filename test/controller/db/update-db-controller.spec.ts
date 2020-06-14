@@ -23,7 +23,7 @@ describe("Spannerの更新処理を行うこと", () => {
 
   const sqlObj: SqlObj<AddCouponParams> = {
     sql: "",
-    params: { uid: "", createdBy: "", title: "" },
+    params: { uid: "", createdAt: "", createdBy: "", title: "" },
   };
 
   describe("実行前チェック", () => {

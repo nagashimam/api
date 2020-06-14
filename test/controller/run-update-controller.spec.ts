@@ -18,7 +18,7 @@ describe("DB更新処理を実行すること", () => {
 
     const sqlObj: SqlObj<AddCouponParams> = {
       sql: "",
-      params: { uid: "", createdBy: "", title: "" },
+      params: { uid: "", createdAt: "", createdBy: "", title: "" },
     };
 
     const handlerGenerator: TransactionHandlerGenerator<AddCouponParams> = jest.genMockFromModule(
