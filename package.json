@@ -4,7 +4,8 @@
   "description": "api for coupon",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=development jest --notify --coverage --env node"
+    "test": "NODE_ENV=development jest --notify --coverage --env node",
+    "start": "NODE_ENV=development ts-node ./src/index.ts"
   },
   "author": "nagashimam",
   "license": "ISC",
@@ -12,7 +13,9 @@
     "@google-cloud/common": "^3.0.0",
     "@google-cloud/spanner": "^5.1.0",
     "@hapi/joi": "^17.1.1",
-    "node": "14.4.0"
+    "express": "^4.17.1",
+    "node": "14.4.0",
+    "ts-node": "^8.10.2"
   },
   "jest": {
     "preset": "ts-jest"

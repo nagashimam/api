@@ -3,6 +3,7 @@ import { Database, Spanner } from "@google-cloud/spanner";
 export default class DatabaseGenerator {
   public genDatabase(env: string): Database {
     const config = require("../../../config.json")[env];
+    console.log("env:" + env);
     const projectId = config.projectId;
     const instanceId = config.instanceId;
     const databaseId = config.databaseId;

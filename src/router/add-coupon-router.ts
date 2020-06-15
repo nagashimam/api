@@ -2,6 +2,7 @@ import AddCouponValidator from "../validator/add-coupon-validator";
 import AddCouponController from "../controller/add-coupon-controller";
 
 export default async function addCouponRouter(req, res) {
+  console.log(req);
   const { createdBy, title } = req.body;
   const validator = new AddCouponValidator();
   const result = validator.validateAddCouponRequest(createdBy, title);
